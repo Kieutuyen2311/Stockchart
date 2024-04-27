@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Biểu đồ kỹ thuật cho mã cổ phiếu {{ symbol }}</title>
+    <!-- Đưa thư viện Plotly vào trang web -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        body {
+            font-family: "Times New Roman", sans-serif;
+        }
+
+        .container {
+            display: flex;
+        }
+
+        .chart {
+            width: 75%; /* Chiếm 3/4 màn hình cho biểu đồ */
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+
+        .stock-info {
+            flex: 1;
+            padding: 20px;
+            background-color: lightgrey;
+            border-radius: 5px;
+        }
+
+        .stock-info h2 {
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .stock-info ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .stock-info li {
+            margin-bottom: 10px;
+        }
+
+        li span {
+            font-style: italic;
+        }
+
+        .error-message {
+            color: red;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .header {
+            background-color: darkslategrey;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .header h1 {
+            color: lightgoldenrodyellow;
+        }
+
+        .form-container {
+            background-color: lightgrey;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .form-container label {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .form-container input[type="text"] {
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            margin-right: 10px;
+        }
+
+        .form-container button {
+            background-color: darkslategrey;
+            color: lightgoldenrodyellow;
+            border: none;
+            border-radius: 3px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        .form-container button:hover {
+            background-color: darkslategrey;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <h1>Biểu đồ kỹ thuật cho mã cổ phiếu {{ symbol }}</h1>
+    </div>
+
+    <div class="form-container">
+        <form method="post" action="{% url 'stock_chart' %}">
+            {% csrf_token %}
+            <label for="stock_symbol">Nhập mã cổ phiếu:</label>
+            <input type="text" name="stock_symbol" id="stock_symbol" required>
+            <button type="submit">Xem biểu đồ</button>
+        </form>
+    </div>
+
+    <div class="container">
+        <div class="chart">
+            <!-- Nơi hiển thị biểu đồ -->
+            {{ plot_div|safe }}
+        </div>
+
+        {% if stock_info %}
+        <div class="stock-info">
+            <h2>Thông tin cổ phiếu</h2>
+            <ul>
+                <li><strong>Tên công ty:</strong> <span>{{ stock_info.company_name }}</span></li>
+                <li><strong>RIC:</strong> <span>{{ stock_info.ric }}</span></li>
+                <li><strong>Ngày bắt đầu giao dịch:</strong> <span>{{ stock_info.start_date }}</span></li>
+                <li><strong>Sàn giao dịch:</strong> <span>{{ stock_info.exchange }}</span></li>
+                <li><strong>Ngành công nghiệp:</strong> <span>{{ stock_info.sector }}</span></li>
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+
+    {% if error_message %}
+    <div class="error-message">
+        <p>{{ error_message }}</p>
+    </div>
+    {% endif %}
+</body>
+
+</html>
